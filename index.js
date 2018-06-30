@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser'); 
+const passport = require('passport');
+
 
 const config = require('./config/config');
 const userRoutes = require('./routes/users');
@@ -11,6 +13,9 @@ mongoose.Promise = global.Promise;
 
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
+server.use(passport.initialize());
+
+require('./config/passport.js')(passport);
 
 server.use('/api/user', userRoutes);
 

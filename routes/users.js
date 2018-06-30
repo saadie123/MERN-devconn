@@ -1,6 +1,9 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const passport = require('passport');
 
+const config = require('../config/config');
 const User = require('../models/User');
 
 const router = express.Router();
@@ -35,5 +38,43 @@ router.post('/register', async function(req, res) {
     }
 });
 
+
+router.post('/login', async function(req, res){
+    const email = req.body.email;
+    const password = req.body.password;
+
+    const user = await User.findOne({ email });
+    if(!user){
+        return res.status(404).send({ email: 'User not found' });
+    }
+    bcrypt.compare(password, user.password, function(err, matched){
+        if(!matched){
+            return res.status(400).send({ password: 'Password is incorrect' });            
+        }
+        const payload = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar
+        }
+        jwt.sign(payload, config.secret,{ expiresIn: '1h' }, function(err, token){
+            return res.status(200).send({ 
+                success: true,
+                message: 'Logged in successfully', 
+                token: `Bearer ${token}` 
+            });
+        });
+    });
+});
+
+router.get('/current', passport.authenticate('jwt',{ session: false }), function(req, res){
+    const responseUser = {
+        id: req.user.id,
+        name: req.user.name,
+        email: req.user.email,
+        avatar: req.user.avatar
+    }
+    res.status(200).send(responseUser);
+});
 
 module.exports = router;
