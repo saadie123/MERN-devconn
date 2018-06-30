@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
 const config = require('../config/config');
+const validateRegisterInput = require('../validation/register');
+const validateLoginInput = require('../validation/login');
 const User = require('../models/User');
 
 const router = express.Router();
@@ -13,7 +15,11 @@ const avatarColors = [
     'CDDC39', 'FFEB3B', 'FFC107', 'FF9800', 'FF5722'
 ];
 router.post('/register', async function(req, res) {
+    const {errors, isValid} = validateRegisterInput(req.body);
     try {
+        if(!isValid){
+            return res.status(400).send(errors);
+        }
         const dbUser = await User.findOne({ email: req.body.email });
         if(dbUser){
             return res.status(400).send({ email: 'Email is already in use' });
@@ -42,7 +48,10 @@ router.post('/register', async function(req, res) {
 router.post('/login', async function(req, res){
     const email = req.body.email;
     const password = req.body.password;
-
+    const {errors, isValid} = validateLoginInput(req.body);
+    if(!isValid){
+        return res.status(400).send(errors);
+    }
     const user = await User.findOne({ email });
     if(!user){
         return res.status(404).send({ email: 'User not found' });
