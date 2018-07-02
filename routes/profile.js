@@ -182,8 +182,8 @@ router.delete('education/:eduId', passport.authenticate('jwt',{ session: false }
 
 router.delete('/', passport.authenticate('jwt',{ session: false }), async function(req, res){
     try {
-        await User.findByIdAndRemove({ _id: req.user.id });
         await Profile.findByIdAndRemove({ user: req.user.id });
+        await User.findByIdAndRemove({ _id: req.user.id });
         res.status(200).send({ success: true });
     } catch (error) {
         res.status(500).send(error);
