@@ -25,7 +25,7 @@ server.use('/api/user', userRoutes);
 server.use('/api/profile', profileRoutes);
 server.use('/api/posts', postRoutes);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 server.listen(port, function () {
     console.log(`Server started on port ${port}`);
 });
