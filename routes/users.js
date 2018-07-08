@@ -36,7 +36,12 @@ router.post('/register', async function(req, res) {
                     avatar
                 });
                 const newUser = await user.save();
-                return res.status(201).send({user: newUser});
+                const responseUser = {
+                    name: newUser.name,
+                    email: newUser.email,
+                    avatar: newUser.avatar
+                }
+                return res.status(201).send({user: responseUser});
             });
         });
     } catch (error) {
