@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import {connect} from 'react-redux';
 import classnames from 'classnames';
+import * as actions from '../../store/actions/auth';
 
 class Login extends Component {
     state = {
@@ -21,11 +22,12 @@ class Login extends Component {
             email: this.state.email,
             password: this.state.password
         }
-        axios.post('/api/user/login', user).then(user=>{
-          console.log(user);
-        }).catch(err=>{
-          this.setState({errors: err.response.data});
-        });
+        this.props.onLogin(user);
+        // axios.post('', user).then(user=>{
+        //   console.log(user);
+        // }).catch(err=>{
+        //   this.setState({errors: err.response.data});
+        // });
     }
   render() {
     const {errors} = this.state;
@@ -68,4 +70,10 @@ class Login extends Component {
     )
   }
 }
-export default Login;
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onLogin: (userData)=>dispatch(actions.loginUser(userData))
+  }
+}
+export default connect(null,mapDispatchToProps)(Login);
