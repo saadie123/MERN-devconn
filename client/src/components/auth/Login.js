@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
+import {withRouter} from 'react-router-dom';
+import propTypes from 'prop-types';
 import classnames from 'classnames';
 import * as actions from '../../store/actions/auth';
 
@@ -22,12 +24,12 @@ class Login extends Component {
             email: this.state.email,
             password: this.state.password
         }
-        this.props.onLogin(user);
-        // axios.post('', user).then(user=>{
-        //   console.log(user);
-        // }).catch(err=>{
-        //   this.setState({errors: err.response.data});
-        // });
+        this.props.onLogin(user, this.props.history);
+    }
+    componentWillReceiveProps(nextProps){
+      if(nextProps.errors){
+        this.setState({errors:nextProps.errors});
+      }
     }
   render() {
     const {errors} = this.state;
@@ -71,9 +73,19 @@ class Login extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+Login.propTypes = {
+  onLogin: propTypes.func.isRequired,
+  errors: propTypes.object.isRequired
+}
+
+const mapStateToProps = state => {
   return {
-    onLogin: (userData)=>dispatch(actions.loginUser(userData))
+    errors: state.error.errors
   }
 }
-export default connect(null,mapDispatchToProps)(Login);
+const mapDispatchToProps = dispatch => {
+  return {
+    onLogin: (userData, history)=>dispatch(actions.loginUser(userData, history))
+  }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(withRouter(Login));
