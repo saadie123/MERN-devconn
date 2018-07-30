@@ -1,91 +1,95 @@
-import React, { Component } from 'react';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
-import propTypes from 'prop-types';
-import classnames from 'classnames';
-import * as actions from '../../store/actions/auth';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+import propTypes from "prop-types";
+import TextFieldGroup from "../common/TextFieldGroup";
+import * as actions from "../../store/actions/auth";
 
 class Login extends Component {
-    state = {
-        email: '',
-        password: '',
-        errors: {}
-    }  
-  
-    inputChangeHandler = (event) => {
-      this.setState({
-          [event.target.name]: event.target.value
-      });
-    }
+  state = {
+    email: "",
+    password: "",
+    errors: {}
+  };
 
-    onSubmit = (event) => {
-        event.preventDefault();
-        const user = {
-            email: this.state.email,
-            password: this.state.password
-        }
-        this.props.onLogin(user, this.props.history);
+  inputChangeHandler = event => {
+    this.setState({
+      [event.target.name]: event.target.value
+    });
+  };
+
+  onSubmit = event => {
+    event.preventDefault();
+    const user = {
+      email: this.state.email,
+      password: this.state.password
+    };
+    this.props.onLogin(user, this.props.history);
+  };
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({ errors: nextProps.errors });
     }
-    componentWillReceiveProps(nextProps){
-      if(nextProps.errors){
-        this.setState({errors:nextProps.errors});
-      }
-    }
+  }
   render() {
-    const {errors} = this.state;
+    const { errors } = this.state;
     return (
-        <div className="login">
+      <div className="login">
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
               <h1 className="display-4 text-center">Log In</h1>
-              <p className="lead text-center">Sign in to your DevConnector account</p>
+              <p className="lead text-center">
+                Sign in to your DevConnector account
+              </p>
               <form>
-                <div className="form-group">
-                  <input type="email" 
-                   className={classnames('form-control form-control-lg',{
-                    'is-invalid': errors.email
-                   })} 
-                   placeholder="Email Address" 
-                   onChange={this.inputChangeHandler}
-                   value={this.state.email}
-                   name="email" />
-                    {errors.email && (<div className='invalid-feedback'>{errors.email}</div>)}
-                </div>
-                <div className="form-group">
-                  <input type="password" 
-                  className={classnames('form-control form-control-lg',{
-                    'is-invalid': errors.password
-                  })}
-                  placeholder="Password" 
+                <TextFieldGroup
+                  type="email"
+                  error={errors.email}
+                  placeholder="Email Address"
+                  onChange={this.inputChangeHandler}
+                  value={this.state.email}
+                  name="email"
+                />
+                <TextFieldGroup
+                  type="password"
+                  error={errors.password}
+                  placeholder="Password"
                   onChange={this.inputChangeHandler}
                   value={this.state.password}
-                  name="password" />
-                  {errors.password && (<div className='invalid-feedback'>{errors.password}</div>)}
-                </div>
-                <input type="submit" onClick={this.onSubmit} className="btn btn-info btn-block mt-4" />
+                  name="password"
+                />
+                <input
+                  type="submit"
+                  onClick={this.onSubmit}
+                  className="btn btn-info btn-block mt-4"
+                />
               </form>
             </div>
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
 Login.propTypes = {
   onLogin: propTypes.func.isRequired,
   errors: propTypes.object.isRequired
-}
+};
 
 const mapStateToProps = state => {
   return {
     errors: state.error.errors
-  }
-}
+  };
+};
 const mapDispatchToProps = dispatch => {
   return {
-    onLogin: (userData, history)=>dispatch(actions.loginUser(userData, history))
-  }
-}
-export default connect(mapStateToProps,mapDispatchToProps)(withRouter(Login));
+    onLogin: (userData, history) =>
+      dispatch(actions.loginUser(userData, history))
+  };
+};
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(Login));
