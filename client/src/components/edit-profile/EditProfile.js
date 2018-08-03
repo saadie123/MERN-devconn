@@ -6,6 +6,7 @@ import TextAreaFieldGroup from "../common/TextAreaFieldGroup";
 import SelectListGroup from "../common/SelectListGroup";
 import InputGroup from "../common/InputGroup";
 import * as actions from "../../store/actions/profile";
+import { isEmpty } from "../../validation/isEmpty";
 
 class CreateProfile extends Component {
   state = {
@@ -26,9 +27,65 @@ class CreateProfile extends Component {
     errors: {}
   };
 
+  componentDidMount() {
+    this.props.getProfile();
+  }
   componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
+    }
+    if (nextProps.profile.profile) {
+      const profileData = nextProps.profile.profile;
+
+      profileData.company = !isEmpty(profileData.company)
+        ? profileData.company
+        : "";
+      profileData.website = !isEmpty(profileData.website)
+        ? profileData.website
+        : "";
+      profileData.location = !isEmpty(profileData.location)
+        ? profileData.location
+        : "";
+      profileData.githubusername = !isEmpty(profileData.githubusername)
+        ? profileData.githubusername
+        : "";
+      profileData.bio = !isEmpty(profileData.bio) ? profileData.bio : "";
+
+      profileData.social = !isEmpty(profileData.social)
+        ? profileData.social
+        : {};
+
+      profileData.twitter = !isEmpty(profileData.social.twitter)
+        ? profileData.social.twitter
+        : "";
+      profileData.facebook = !isEmpty(profileData.social.facebook)
+        ? profileData.social.facebook
+        : "";
+      profileData.linkedin = !isEmpty(profileData.social.linkedin)
+        ? profileData.social.linkedin
+        : "";
+      profileData.youtube = !isEmpty(profileData.social.youtube)
+        ? profileData.social.youtube
+        : "";
+      profileData.instagram = !isEmpty(profileData.social.instagram)
+        ? profileData.social.instagram
+        : "";
+
+      this.setState({
+        handle: profileData.handle,
+        company: profileData.company,
+        website: profileData.website,
+        location: profileData.location,
+        status: profileData.status,
+        skills: profileData.skills,
+        githubusername: profileData.githubusername,
+        bio: profileData.bio,
+        twitter: profileData.twitter,
+        facebook: profileData.facebook,
+        linkedin: profileData.linkedin,
+        youtube: profileData.youtube,
+        instagram: profileData.instagram
+      });
     }
   }
   onChange = e => {
@@ -122,10 +179,7 @@ class CreateProfile extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Create Your Profile</h1>
-              <p className="lead text-center">
-                Let's get some information to make your profile stand out
-              </p>
+              <h1 className="display-4 text-center">Edit Profile</h1>
               <small className="d-block padding-bottom-3">
                 * = required fields
               </small>
@@ -233,7 +287,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     onCreateProfile: (profileData, history) =>
-      dispatch(actions.createProfile(profileData, history))
+      dispatch(actions.createProfile(profileData, history)),
+    getProfile: () => dispatch(actions.getCurrentProfile())
   };
 };
 
